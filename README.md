@@ -3,10 +3,12 @@
 Simple MS Teams message publisher
 
 Messages created using AdaptiveCards
-[Reference](https://learn.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/connectors-using?tabs=cURL#send-adaptive-cards-using-an-incoming-webhook)
 
-[Samples]([Samples and Templates | Adaptive Cards](https://adaptivecards.io/samples/))
-[Designer]([Designer | Adaptive Cards](https://adaptivecards.io/designer))
+* [Reference](https://learn.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/connectors-using?tabs=cURL#send-adaptive-cards-using-an-incoming-webhook)
+
+* [Samples]([Samples and Templates | Adaptive Cards](https://adaptivecards.io/samples/))
+
+* [Designer]([Designer | Adaptive Cards](https://adaptivecards.io/designer))
 
 ## 1. Properties
 
@@ -65,3 +67,14 @@ loadInputFile(String fileName, Class<T> type)
 ```
 
 > Load input from text file in `resources/` directory.
+
+
+
+```mermaid
+graph TD
+A[Christmas] -->|Get money| B(Go shopping)
+B --> C{Let me think}
+C -->|One| D[Laptop]
+C -->|Two| E[iPhone]
+C -->|Three| F[fa:fa-car Car]
+```
