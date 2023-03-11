@@ -28,7 +28,7 @@ buildDefaultMessage(Map<String, String> dataMap)
 
 > ![](2.png)
 > 
-> Separate table row for each datamap.entry
+> Separate table row for each dataMap entry
 
 ```java
 buildMessage(Map<String, String> factMap, Map<String, String> dataMap)
@@ -36,9 +36,9 @@ buildMessage(Map<String, String> factMap, Map<String, String> dataMap)
 
 > ![](2.png)
 > 
-> Separate header row for each factMap.exntry
+> Separate header row for each factMap entry
 > 
-> Separate table row for each datamap.entry
+> Separate table row for each dataMap entry
 
 ```java
 buildMessageFromJsonString(String adaptiveCardJson, Map<String, String> dataMap)
