@@ -31,8 +31,13 @@ public class AdaptiveTemplate {
     }
 
     public String apply() {
+        String processObject = processObject(obj);
+        if(processObject.isBlank()){
+            log.error("Cannot process element of type [{}].", obj.getClass().getSimpleName());
+            throw new UnsupportedOperationException("Cannot process element.");
+        }
         String output = T_CONTAINER.replace(R_FACTS, processFacts());
-        output = output.replace(R_BODY, processObject(obj));
+        output = output.replace(R_BODY, processObject);
 
         return T_ADAPTIVE_CARD.replace(R_CONTAINER, output);
     }
@@ -105,7 +110,9 @@ public class AdaptiveTemplate {
                     throw new UnsupportedOperationException("I missed something. Please raise create a bug.");
                 }
             } else {
-                cellValue = processObject(v);
+                String nestedObject = processObject(v);
+                if(nestedObject.isBlank()) return;
+                cellValue = nestedObject;
             }
 
             dataRow = dataRow.replace(R_VALUE, cellValue);
