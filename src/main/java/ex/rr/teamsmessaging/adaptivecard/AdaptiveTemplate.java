@@ -3,6 +3,7 @@ package ex.rr.teamsmessaging.adaptivecard;
 import ex.rr.teamsmessaging.adaptivecard.annotations.AdaptiveCard;
 import ex.rr.teamsmessaging.adaptivecard.annotations.CardField;
 import ex.rr.teamsmessaging.adaptivecard.annotations.CardIgnore;
+import ex.rr.teamsmessaging.adaptivecard.enums.Style;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -10,68 +11,39 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ex.rr.teamsmessaging.adaptivecard.constants.Replacements.*;
+import static ex.rr.teamsmessaging.adaptivecard.constants.Templates.*;
+
 @Slf4j
 @Component
 public class AdaptiveTemplate {
 
-    private Object obj;
-    private Map<String, String> facts;
+    private final Object obj;
+    private final Map<String, String> facts;
+    private final Style style;
     private String title;
 
 
-    private AdaptiveTemplate(Object obj, Map<String, String> facts) {
+    private AdaptiveTemplate(Object obj, Map<String, String> facts, Style style) {
         this.obj = obj;
         this.facts = facts;
+        this.style = style;
     }
 
-
-    public static final String KEY = "${KEY}";
-    public static final String VALUE = "${VALUE}";
-    public static final String ROWS = "${ROWS}";
-
-    private final String ADAPTIVE_CARD = """
-            { "type": "AdaptiveCard", "$schema": "http://adaptivecards.io/schemas/adaptive-card.json", "version": "1.5", "body": [ ${CONTAINER} ] }""";
-
-    private final String CONTAINER = """
-            { "type": "Container","items": [ ${FACTS} ${BODY} ] }""";
-
-    private final String FACTS = """
-            { "type":"FactSet", "facts": ${FACTS} },""";
-
-    private final String FACT_ENTRY = """
-            { "title":"${KEY}", "value":"${VALUE}" }""";
-    private final String TITLE = """
-            { "type": "RichTextBlock", "inlines": [ { "type": "TextRun", "text": "${VALUE}" } ] },""";
-
-    private final String MAP_TABLE_TEMPLATE = """
-            ${TITLE} { "type":"Table", "firstRowAsHeaders": false, "columns":[ {"width":20}, {"width":30} ], "rows":${ROWS} }""";
-
-    private final String LIST_TABLE_TEMPLATE = """
-            { "type":"Table", "firstRowAsHeaders": false, "columns":[ {"width":1} ], "rows":${ROWS} }""";
-
-    private final String MAP_DATA_ROW = """
-            { "type":"TableRow", "cells": [ { "type":"TableCell", "items": [ ${KEY} ] }, { "type":"TableCell", "items": [ ${VALUE} ] } ] }""";
-
-    private final String LIST_DATA_ROW = """
-            { "type":"TableRow", "cells": [ { "type":"TableCell", "items": [ ${VALUE} ] } ] }""";
-
-    private final String DEFAULT_CELL_ITEM = """
-            { "text": "${VALUE}", "type": "TextBlock", "wrap": false }""";
-
-
     public String apply() {
-        String output = CONTAINER.replace("${FACTS}", processFacts());
-        output = output.replace("${BODY}", processObject(obj));
+        String output = T_CONTAINER.replace(R_FACTS, processFacts());
+        output = output.replace(R_BODY, processObject(obj));
 
-        return ADAPTIVE_CARD.replace("${CONTAINER}", output);
+        return T_ADAPTIVE_CARD.replace(R_CONTAINER, output);
     }
 
     private String processFacts() {
         if (facts != null && !facts.isEmpty()) {
             List<String> factList = facts.entrySet().stream().map(entry ->
-                    FACT_ENTRY.replace(KEY, entry.getKey())
-                            .replace(VALUE, entry.getValue())).toList();
-            return FACTS.replace("${FACTS}", factList.toString());
+                    T_FACT_ENTRY.replace(R_KEY, entry.getKey())
+                            .replace(R_VALUE, entry.getValue())).toList();
+            return T_FACTS.replace(R_FACTS, factList.toString())
+                    .replace(R_STYLE, style.name);
         }
         return "";
     }
@@ -94,7 +66,7 @@ public class AdaptiveTemplate {
 
     private String processTitle(AdaptiveCard annotation) {
         if (!annotation.title().isBlank()) {
-            return TITLE.replace(VALUE, annotation.title());
+            return T_TITLE.replace(R_VALUE, annotation.title());
         }
         return "";
     }
@@ -107,18 +79,19 @@ public class AdaptiveTemplate {
     private String processMap(Map<String, Object> fieldMap) {
         List<String> dataRows = new ArrayList<>(fieldMap.size());
 
-        String result = MAP_TABLE_TEMPLATE.replace("${TITLE}", title);
+        String result = T_MAP_TABLE_TEMPLATE.replace(R_TITLE, title);
 
         fieldMap.forEach((k, v) -> {
-            log.debug("Key - [{}]: [{}]\t | Value - [{}]: [{}]", k.getClass().getSimpleName(), k, v.getClass().getSimpleName(), v);
+            log.debug("Key - [{}]: [{}]\t | Value - [{}]: [{}]",
+                    k.getClass().getSimpleName(), k, v.getClass().getSimpleName(), v);
 
-            String dataRow = MAP_DATA_ROW;
-            dataRow = dataRow.replace(KEY, DEFAULT_CELL_ITEM.replace(VALUE, k));
+            String dataRow = T_MAP_DATA_ROW;
+            dataRow = dataRow.replace(R_KEY, T_DEFAULT_CELL_ITEM.replace(R_VALUE, k));
 
-            String cellValue = "";
+            String cellValue;
 
             if (v.getClass().getName().startsWith("java.lang")) {
-                cellValue = DEFAULT_CELL_ITEM.replace(VALUE, v.toString());
+                cellValue = T_DEFAULT_CELL_ITEM.replace(R_VALUE, v.toString());
             } else if (v.getClass().getName().startsWith("java.util")) {
                 if (v instanceof Map<?, ?> m) {
                     Map<String, Object> collect = m.entrySet().stream()
@@ -129,23 +102,24 @@ public class AdaptiveTemplate {
                 } else if (v instanceof Collection<?> c) {
                     cellValue = processCollection(c);
                 } else {
+                    throw new UnsupportedOperationException("I missed something. Please raise create a bug.");
                 }
             } else {
                 cellValue = processObject(v);
             }
 
-            dataRow = dataRow.replace(VALUE, cellValue);
+            dataRow = dataRow.replace(R_VALUE, cellValue);
             dataRows.add(dataRow);
         });
-        return result.replace(ROWS, dataRows.toString());
+        return result.replace(R_ROWS, dataRows.toString());
     }
 
     private String processCollection(Collection<?> c) {
         List<String> cellRows = c.stream().map(it ->
-                        LIST_DATA_ROW.replace(VALUE,
-                                DEFAULT_CELL_ITEM.replace(VALUE, it.toString())))
+                        T_LIST_DATA_ROW.replace(R_VALUE,
+                                T_DEFAULT_CELL_ITEM.replace(R_VALUE, it.toString())))
                 .toList();
-        return LIST_TABLE_TEMPLATE.replace(ROWS, cellRows.toString());
+        return T_LIST_TABLE_TEMPLATE.replace(R_ROWS, cellRows.toString());
     }
 
     private String processCustomTemplate(Object obj, String template) {
@@ -171,6 +145,7 @@ public class AdaptiveTemplate {
     public static class Builder {
         private Map<String, String> facts;
         private Object obj;
+        private Style style = Style.DEFAULT;
 
         public Builder object(Object obj) {
             this.obj = obj;
@@ -182,8 +157,13 @@ public class AdaptiveTemplate {
             return this;
         }
 
+        public Builder style(Style style) {
+            this.style = style;
+            return this;
+        }
+
         public AdaptiveTemplate build() {
-            return new AdaptiveTemplate(obj, facts);
+            return new AdaptiveTemplate(obj, facts, style);
         }
     }
 

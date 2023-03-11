@@ -1,6 +1,6 @@
 package ex.rr.teamsmessaging.adaptivecard.annotations;
 
-import ex.rr.teamsmessaging.adaptivecard.TemplateType;
+import ex.rr.teamsmessaging.adaptivecard.enums.TemplateType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
