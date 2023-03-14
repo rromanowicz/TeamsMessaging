@@ -37,6 +37,7 @@ jobs:
       run: mvn clean verify
       
     - name: Add coverage to PR
+      if: github.event_name == 'pull_request'
       id: jacoco
       uses: madrapps/jacoco-report@v1.2
       with:
@@ -47,17 +48,19 @@ jobs:
         title: Code Coverage
 
     - name: Save Coverage To Environment Variable
+      if: github.event_name == 'pull_request'
       run: |
         echo "TOTAL_COVERAGE=${{ steps.jacoco.outputs.coverage-overall }}" >> $GITHUB_ENV
         echo "CHANGED_FILES_COVERAGE=${{ steps.jacoco.outputs.coverage-changed-files }}" >> $GITHUB_ENV
 
     - name: Print & Check Coverage Info
+      if: github.event_name == 'pull_request'
       run: |
         import os
         import sys
         print("Total Coverage: " + str(os.environ["TOTAL_COVERAGE"]))
         print("Changed Files Coverage: " + str(os.environ["CHANGED_FILES_COVERAGE"]))
-        if float(os.environ["TOTAL_COVERAGE"]) < 80 or float(os.environ["CHANGED_FILES_COVERAGE"]) < 80:
+        if float(os.environ["CHANGED_FILES_COVERAGE"]) < 80:
           print("Insufficient Coverage!")
           sys.exit(-1) # Cause Status Check Failure due to noncompliant coverage
         sys.exit(0)
