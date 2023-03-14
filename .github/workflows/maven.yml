@@ -10,7 +10,7 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "master", "develop" ]
+#     branches: [ "master", "develop" ]
   pull_request:
     branches: [ "master", "develop" ]
 
@@ -57,9 +57,8 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-#       - name: Generate Coverage Report
-#         run: |
-#           mvn -B package --file pom.xml
+      - name: Generate Coverage Report
+        run: mvn clean verify
 
 #       - name: Upload Report
 #         uses: 'actions/upload-artifact@v2'
