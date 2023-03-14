@@ -52,8 +52,8 @@ jobs:
 
     - name: Get the Coverage info
       run: |
-        echo "Total coverage ${{ steps.jacoco.outputs.coverage-overall }}"
-        echo "Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}"
+        echo "Total coverage ${{ steps.jacoco.outputs.coverage-overall }}" >> $GITHUB_OUTPUT
+        echo "Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}" >> $GITHUB_OUTPUT
 
 #     - name: Print & Check Coverage Info
 #       run: |
