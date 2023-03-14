@@ -9,9 +9,10 @@
 name: Java CI with Maven
 
 permissions:
-  contents: 'read'
-  id-token: 'write'
-  issues: 'write' #__This fixed the HttpError: Resource not accessible by integration
+  id-token: write
+  contents: read
+  issues: write
+  pull-requests: write
 
 on:
   push:
