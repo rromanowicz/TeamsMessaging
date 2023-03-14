@@ -5,7 +5,6 @@ import ex.rr.teamsmessaging.adaptivecard.annotations.CardField;
 import ex.rr.teamsmessaging.adaptivecard.annotations.CardIgnore;
 import ex.rr.teamsmessaging.adaptivecard.enums.Style;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -15,7 +14,6 @@ import static ex.rr.teamsmessaging.adaptivecard.constants.Replacements.*;
 import static ex.rr.teamsmessaging.adaptivecard.constants.Templates.*;
 
 @Slf4j
-@Component
 @SuppressWarnings("unused")
 public class AdaptiveTemplate {
 
