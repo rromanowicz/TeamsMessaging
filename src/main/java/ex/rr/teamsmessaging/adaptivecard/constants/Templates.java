@@ -2,6 +2,9 @@ package ex.rr.teamsmessaging.adaptivecard.constants;
 
 public class Templates {
 
+    public static final String T_MESSAGE = """
+            { "type":"message", "attachments":[ { "contentType":"application/vnd.microsoft.card.adaptive", "contentUrl":null, "content": ${VALUE} } ] }
+            """;
     public static final String T_ADAPTIVE_CARD = """
             { "type": "AdaptiveCard", "$schema": "http://adaptivecards.io/schemas/adaptive-card.json", "version": "1.5", "body": [ ${CONTAINER} ] }""";
 
