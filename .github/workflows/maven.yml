@@ -45,15 +45,15 @@ jobs:
         min-coverage-changed-files: 80
         title: Code Coverage
 
-    - name: Save Coverage To Environment Variable
-      run: |
-        echo "TOTAL_COVERAGE=${{ steps.jacoco.outputs.coverage-overall }}" >> $GITHUB_ENV
-        echo "CHANGED_FILES_COVERAGE=${{ steps.jacoco.outputs.coverage-changed-files }}" >> $GITHUB_ENV
+#     - name: Save Coverage To Environment Variable
+#       run: |
+#         echo "TOTAL_COVERAGE=${{ steps.jacoco.outputs.coverage-overall }}" >> $GITHUB_ENV
+#         echo "CHANGED_FILES_COVERAGE=${{ steps.jacoco.outputs.coverage-changed-files }}" >> $GITHUB_ENV
 
     - name: Get the Coverage info
       run: |
-        echo "TOTAL_COVERAGE=${{ steps.jacoco.outputs.coverage-overall }}" >> $GITHUB_OUTPUT
-        echo "CHANGED_FILES_COVERAGE=${{ steps.jacoco.outputs.coverage-changed-files }}" >> $GITHUB_OUTPUT
+        echo "Total coverage ${{ steps.jacoco.outputs.coverage-overall }}"
+        echo "Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}"
 
 #     - name: Print & Check Coverage Info
 #       run: |
