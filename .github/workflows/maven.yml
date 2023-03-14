@@ -45,38 +45,46 @@ jobs:
 #         min-coverage-changed-files: 80
 #         title: Code Coverage
 
-  notify:
-    needs: build
+  comment:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+      - uses: actions/github-script@v3
         with:
-          java-version: 17
-          distribution: 'temurin'
-          cache: maven
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '👋 Thanks for reporting!'
+            })
 
-      - name: Generate Coverage Report
-        run: mvn clean verify
-
-#       - name: Upload Report
-#         uses: 'actions/upload-artifact@v2'
+#   notify:
+#     needs: build
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#       - name: Set up JDK 17
+#         uses: actions/setup-java@v3
 #         with:
-#           name: jacoco-report
-#           path: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+#           java-version: 17
+#           distribution: 'temurin'
+#           cache: maven
 
-      - name: Add coverage to PR
-        id: jacoco
-        uses: madrapps/jacoco-report@v1.3
-        with:
-          paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 40
-          min-coverage-changed-files: 60
-          debug-mode: false
+#       - name: Generate Coverage Report
+#         run: mvn clean verify
 
-      - name: Get the Coverage info
-        run: |
-          echo "Total coverage ${{ steps.jacoco.outputs.coverage-overall }}"
-          echo "Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}"
+#       - name: Add coverage to PR
+#         id: jacoco
+#         uses: madrapps/jacoco-report@v1.3
+#         with:
+#           paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+#           token: ${{ secrets.GITHUB_TOKEN }}
+#           min-coverage-overall: 40
+#           min-coverage-changed-files: 60
+#           debug-mode: false
+
+#       - name: Get the Coverage info
+#         run: |
+#           echo "Total coverage ${{ steps.jacoco.outputs.coverage-overall }}"
+#           echo "Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}"
