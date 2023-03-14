@@ -37,6 +37,7 @@ jobs:
       run: mvn clean verify
       
     - name: Add coverage to PR
+      if: github.event_name == 'pull_request'
       id: jacoco
       uses: madrapps/jacoco-report@v1.2
       with:
@@ -47,11 +48,13 @@ jobs:
         title: Code Coverage
 
     - name: Save Coverage To Environment Variable
+      if: github.event_name == 'pull_request'
       run: |
         echo "TOTAL_COVERAGE=${{ steps.jacoco.outputs.coverage-overall }}" >> $GITHUB_ENV
         echo "CHANGED_FILES_COVERAGE=${{ steps.jacoco.outputs.coverage-changed-files }}" >> $GITHUB_ENV
 
     - name: Print & Check Coverage Info
+      if: github.event_name == 'pull_request'
       run: |
         import os
         import sys
