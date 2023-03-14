@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     if: "!startsWith(github.event.pull_request.title, 'PR - ')"
     steps:
-      - uses: actions/github-script@v4.2.0
+      - uses: actions/github-script@v6
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
