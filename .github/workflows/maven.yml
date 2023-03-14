@@ -29,3 +29,8 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn clean verify
+    - name: Archive Jacoco reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: jacoco-reports
+        path: test-coverage/target/site/jacoco-aggregate
